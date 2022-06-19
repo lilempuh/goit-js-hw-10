@@ -3,6 +3,7 @@ import debounce from 'lodash.debounce';
 import './fetchCountries';
 import { fetchCountries } from './fetchCountries';
 import Notiflix from 'notiflix';
+const debounce = require("lodash.debounce")
 
 const refs = {
     countryСhoice: document.querySelector(".country-list"),
@@ -14,7 +15,9 @@ const DEBOUNCE_DELAY = 300;
 refs.input.addEventListener("input",debounce(onInput, DEBOUNCE_DELAY));
 
 
-function onInput() {
+function onInput(e) {
+  e.preventDefault();
+// refs.countryСhoice.innerHTML = "";
   const nameCountry = refs.input.value.trim();
   
     if (nameCountry === "") {
@@ -27,6 +30,8 @@ function onInput() {
 }
 
 function faindCountry(countries) {
+  refs.countryInfo.innerHTML = "";
+
   const markupOne = countries
     .map(({ flags, name }) => {
       return `<li class="country-list__element">
@@ -34,10 +39,12 @@ function faindCountry(countries) {
                <p class="country-list__text">${name.common}</p></li>`; })
     .join("");
   
-    refs.countryСhoice.insertAdjacentHTML('beforeend', markupOne)
-}
+  refs.countryСhoice.innerHTML = markupOne;
+ 
+};
 
 function renderCountry(countries) {
+
     const markup = countries.map(({ name, capital, population, languages, flags }) => {
       return `<div class="country-info-card">
  <img src="${flags.svg}" width="45"  height="35" alt="">
@@ -46,25 +53,28 @@ function renderCountry(countries) {
   <p class="country-info__text">Population:<span> ${population} </span></p>
   <p class="country-info__text">Languages: <span>${Object.values(languages).join(',')} </span></p>`
     }).join("");
- 
+  
+  
   refs.countryInfo.innerHTML =  markup;
 };
 
 
 function lengthNameCountry(country) {
   const countryLength = country.length;
+  clearCountries();
   if (countryLength > 10) {
     clearCountries();
     info();
   }
   else if (countryLength >= 2 && countryLength <= 10) {
+    refs.countryInfo.innerHTML = "";
     return faindCountry(country);
   }
   else if (countryLength === 1){
-    clearCountries()
+    clearCountries();
     return renderCountry(country);
   }
-}
+};
 
 function onError() {
   clearCountries();
@@ -78,4 +88,4 @@ function info() {
 function clearCountries() {
   refs.countryСhoice.innerHTML = "";
   refs.countryInfo.innerHTML = "";
-}
+};
